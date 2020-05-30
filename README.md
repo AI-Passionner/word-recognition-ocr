@@ -1,9 +1,12 @@
 ## Deep-Learning-Based Word Recognition OCR
 
 ### Background
-This repo is directly inspired by Baoguang Shi et al.'s CRNN (CNN+LSTM) [paper](https://arxiv.org/abs/1507.05717) published in 2015. The novel neural network architecture introduced in this paper could be the foundation of modern OCR technology. There are numerous text recognition Repositories in GitHub, which are the adaption of the CNN+LSTM architecture more or less, including this repo. 
-  I have been using both conventional OCR (like OpenText and Nuance) and deep-learning-based OCR (Tesseract and AWS Textract) quite a long time. The former, I like to call it as a conventional OCR, simply because I want to distinguish it from the modern deep-learning-based OCR. 
-   The CNN-based OCR outperforms the conventional one with [higher accuracy](https://www.tsgrp.com/2019/02/12/amazon-textract-and-opentext-capture-recognition-engine-recostar-comparison) and less image pre-processing. 
+This repo is directly inspired by Baoguang Shi et al.'s CRNN (CNN+LSTM) [paper](https://arxiv.org/abs/1507.05717) published in 2015. The novel
+ neural network architecture introduced in this paper could be the foundation of modern OCR technology. There are numerous text recognition repos
+  in GitHub after this paper, which are more or less the adaption of the CNN+LSTM architecture, including this one. 
+
+I have been using both conventional OCR (OpenText) and deep-learning-based OCR (Tesseract and AWS Textract) quite a long time. The former, I like to call it as a conventional OCR, simply because I want to distinguish it from the modern deep-learning-based OCR. 
+ The CNN-based OCR outperforms the conventional one with [higher accuracy](https://www.tsgrp.com/2019/02/12/amazon-textract-and-opentext-capture-recognition-engine-recostar-comparison) and less image pre-processing. 
 
 Think about the famous MNIST handwritten digit recognition problem. If you build a Logistic Regression model (softmax), probably you will get an
  accuracy of around 93%. Applying a Feed-Forward Neural Network will boost the accuracy of up to 98%. However, a convolutional neural network could push the accuracy up to >99% easily. 
