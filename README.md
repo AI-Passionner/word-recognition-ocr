@@ -19,6 +19,7 @@ The conventional OCR actually extracts characteristics out of each isolated shap
   symbol.  The attached is an example of a detailed terminology available to describe the "geography" of a letter form. 
     
     ![Font Anatomy](/images/letter-anatomy.png)
+    Format: ![Alt Text](https://github.com/AI-Passionner/word-recognition-ocr/blob/master/images/letter-anatomy.png?raw=true)
 
 One big benefit using the convolutional neural network is about the automated feature extraction. This works very well in image-related
  recognition and classification. 
@@ -28,10 +29,10 @@ However, before the actual character recognition, there is a very challenging pa
  letters separated out from a word. 
  
     ![Touching Characters](/images/touching_characters.png)
-
+    Format: ![Alt Text](https://github.com/AI-Passionner/word-recognition-ocr/blob/master/images/touching_characters.png?raw=true)
  
     ![Degraded Characters](/images/degraded_characters.png)
-    
+    Format: ![Alt Text](https://github.com/AI-Passionner/word-recognition-ocr/blob/master/images/degraded_characters.png?raw=true)
     
 The character segmentation can be avoided if the OCR engine uses word recognition with an artificial neural network. After all, separating
  a word out of the text line is much easier than separating individual letters out of a word.  But why word recognition, rather than character
