@@ -18,8 +18,8 @@ The conventional OCR actually extracts characteristics out of each isolated shap
  each symbol was broken up into a set of characteristics, such as lines, strokes, curves, loops, etc. Rules were then applied to find the closest
   symbol.  The attached is an example of a detailed terminology available to describe the "geography" of a letter form. 
     
-    ![Font Anatomy](/images/letter-anatomy.png)
-    Format: ![Alt Text](https://github.com/AI-Passionner/word-recognition-ocr/blob/master/images/letter-anatomy.png?raw=true)
+    
+<img width="964" alt="Font Anatomy" src="https://github.com/AI-Passionner/word-recognition-ocr/blob/master/images/letter-anatomy.png?raw=true">
 
 One big benefit using the convolutional neural network is about the automated feature extraction. This works very well in image-related
  recognition and classification. 
