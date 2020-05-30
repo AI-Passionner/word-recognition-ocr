@@ -9,16 +9,16 @@ The CNN-based OCR outperforms the conventional one with [higher accuracy](https:
     
 The conventional OCR extracts characteristics out of each isolated shape and then assigns a symbol. With feature extraction, the bitmap of each symbol was broken up into a set of characteristics, such as lines, strokes, curves, loops, etc. Rules were then applied to find the closest symbol. The attached is an example of a detailed terminology available to describe the "geography" of a letter form.    
     
-    <img width="600" alt="Font Anatomy" src="https://github.com/AI-Passionner/word-recognition-ocr/blob/master/images/letter-anatomy.png?raw=true">
+    <img width="600" alt="Font Anatomy" src="https://github.com/AI-Passionner/word-recognition-ocr/blob/master/images/letter-anatomy.png">
 
 
 One big benefit of using the convolutional neural network is the automated feature extraction. This works very well in image-related recognition and classification. 
  
 However, before the actual character recognition, there is a very challenging part, called character segmentation, separating the various letters of a word. If you look at the next two snapshots, you will see what I mean. The character recognition accuracy highly counts on whether the individual letters separated from a word. 
  
-    <img width="600" alt="Touching Characters" src="https://github.com/AI-Passionner/word-recognition-ocr/blob/master/images/touching_characters.png?raw=true">
+    <img width="600" alt="Touching Characters" src="https://github.com/AI-Passionner/word-recognition-ocr/blob/master/images/touching_characters.png">
  
-    <img width="600" alt="Degraded Characters" src="https://github.com/AI-Passionner/word-recognition-ocr/blob/master/images/degraded_characters.png?raw=true">
+    <img width="600" alt="Degraded Characters" src="https://github.com/AI-Passionner/word-recognition-ocr/blob/master/images/degraded_characters.png">
 
     
 The character segmentation can be avoided if the OCR engine uses word recognition with an artificial neural network. After all, separating a word of the text line is much easier than separating individual letters of a word. But why word recognition, rather than character recognition? It is because of the particular advantages of the novel CRNN architecture mentioned in the paper. The CNN+LSTM architecture is specifically designed for sequence-like object recognition in images. It can learn directly words without detailed character annotations or character segmentation. 
