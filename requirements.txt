@@ -1,0 +1,14 @@
+tensorflow-gpu==2.2.0
+opencv-python==4.2.0.34
+numpy==1.18.4
+matplotlib==3.2.1
+Unidecode==1.1.1
+Pillow==7.1.2
+h5py==2.10.0
+# scikit-image==0.17.2
+scikit-learn==0.23.1
+# Werkzeug==1.0.1
+# gunicorn==20.0.4
+# gevent==20.4.0
+# setuptools==46.3.1
+# requests==2.23.0
