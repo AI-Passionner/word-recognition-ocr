@@ -28,7 +28,7 @@ However, before the actual character recognition, there is a very challenging pa
  word. If you look at the next two snapshots, you will see what I mean. The character recognition accuracy highly counts on whether the individual
  letters separated out from a word. 
  
- <img width="600" alt="Touching Characters" src="hhttps://github.com/AI-Passionner/word-recognition-ocr/blob/master/images/touching_characters.png?raw=true">
+ <img width="600" alt="Touching Characters" src="https://github.com/AI-Passionner/word-recognition-ocr/blob/master/images/touching_characters.png?raw=true">
  
  <img width="600" alt="Degraded Characters" src="https://github.com/AI-Passionner/word-recognition-ocr/blob/master/images/degraded_characters.png?raw=true">
 
