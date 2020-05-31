@@ -37,3 +37,23 @@ Mind you, machine learning is not about the machine’s “intelligence”, it i
 4. https://github.com/weinman/cnn_lstm_ctc_ocr
 5. https://www.tsgrp.com/2019/02/12/amazon-textract-and-opentext-capture-recognition-engine-recostar-comparison
 6. https://www.how-ocr-works.com/intro/intro.html
+
+
+
+### Neural Network Structure
+
+
+
+### Download the pre-trained CNN+LSTM model
+A pre-trained [model]() (two files) was saved in google drive. If testing locally, please make sure the model file path './best_model'. 
+
+### Training a new model
+A sample of synthetic word images (50K) was included for playing only. They are not good enough to achieve a high recognition rate in real application. The pre-trained model was trained on millions of synthetic and real word images. If you like to have more samples for your research, please contact me (dlaohu.github@gmail.com).  
+
+### Compare to Textract
+Given an text image and its Textract ocr, you can quickly check the model performance. The current model is comparable to the Textract in invoice documents. However, there are still some improvements, such as image pre-processing and spell check. Removing lines, increasing the contrast, de-noising, and spell check are under investigation now. 
+    
+    $ python compare_textract.py
+    
+### Docuemnt Layout Analysis (working)
+
