@@ -9,7 +9,8 @@ class ResourceUtils:
     def load_data(word_img_file_path):     
         f = gzip.open(word_img_file_path , 'rb')
         data = pickle.load(f, encoding='latin1')
-        X, Y = data['X'], data['Y']
+        x, y = data['X'], data['Y']
         f.close()   
-        X, Y = shuffle(X, Y)
-        return X, Y
+        x, y = shuffle(x, y)
+        return x, y
+

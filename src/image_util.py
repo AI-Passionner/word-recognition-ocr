@@ -17,14 +17,20 @@ class  ImageUtils:
     @staticmethod
     def image_for_extraction(raw_image):
         gray = cv2.cvtColor(raw_image, cv2.COLOR_BGR2GRAY)
-        # gray = cv2.GaussianBlur(gray,(3,3),0)
-        # thresh = cv2.adaptiveThreshold(gray,255,1,1,11,2)
-        ret,thresh = cv2.threshold(gray,0,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)   
-        # kernel = np.ones((1,1),np.uint8)
-        # thresh = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel)
-        # thresh = cv2.erode(thresh, (2,2),iterations=2)
+        ret,thresh = cv2.threshold(gray,0,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
         return thresh
-    
+
+    @staticmethod
+    def image_for_segmentation(raw_image):
+        gray = cv2.cvtColor(raw_image, cv2.COLOR_BGR2GRAY)
+        gray = cv2.GaussianBlur(gray,(3,3),0)
+        # thresh = cv2.adaptiveThreshold(gray,255,1,1,11,2)
+        ret,thresh = cv2.threshold(gray,0,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
+        kernel = np.ones((1,1),np.uint8)
+        thresh = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel)
+        thresh = cv2.erode(thresh, (2,2),iterations=2)
+        return thresh
+
     @staticmethod
     def reverseXY(img_h, img_w, bbox):
         x0, y0, x1, y1 = bbox

@@ -1,38 +1,55 @@
-import cv2 
-import json
 import numpy as np
 import itertools
-from scipy.stats.mstats import gmean
+import logging
+import traceback
 
 from tensorflow.keras.models import model_from_json
 from src.config import characters
 from src.train_util import TrainingUtils
-from src.image_util import ImageUtils
-from src.textract_util import TextractUtils
+from src.config import model_json_file, model_weight_file, input_shape
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
-class Predict:
+class RecognitionUtils:
+    MODEL = None
+
+    @classmethod
+    def load_model(cls):
+        try:
+            json_file = open(model_json_file)
+            model_json = json_file.read()
+            json_file.close()
+            cls.MODEL = model_from_json(model_json)
+            cls.MODEL.load_weights(model_weight_file)
+            print("A pre-trained model was loaded")
+
+        except Exception as exception:
+            trc = traceback.format_exc()
+            raise Exception('Exception found while loading the model, {}'.format(trc))
+
+        return
     
-    @staticmethod
-    def load_model(model_json_file, model_weight_file):   
-        # load model json file
-        json_file = open(model_json_file)
-        model_json = json_file.read()
-        json_file.close()
-        
-        loaded_model = model_from_json(model_json)    
-        loaded_model.load_weights(model_weight_file)
-        print("pre-trained model loaded")
-        
-        return loaded_model
-    
-    @staticmethod
-    def decode_batch(out):
+    @classmethod
+    def decode_batch(cls, crnn_out):
+        """
+        Run the pre-trained model to recognize each word image. It assumes word_images are clean and not empty
+        Parameters
+        ----------
+        out :
+
+        Returns
+        -------
+        return
+
+        """
         ret = []
-        for j in range(out.shape[0]):        
-            probs_array = out[j, 2:]
+        for j in range(crnn_out.shape[0]):
+            probs_array = crnn_out[j, 2:]
             pred_cls = list(np.argmax(probs_array , 1))
             pred_probs = [probs_array[i][pred_cls[i]] for i in range(len(pred_cls))]
+
             output = []
             index = 0
             for k, g in itertools.groupby(pred_cls):  
@@ -49,12 +66,50 @@ class Predict:
                     outstr += characters[i]
                     char_probs.append(p + np.finfo(float).eps)
             
-            ret.append([outstr, gmean(char_probs)])
+            ret.append([outstr, np.mean(char_probs)])
 
         return ret
-    
-    @staticmethod
-    def imgs_to_words(input_model, input_shape, word_images):    
+
+    @classmethod
+    def convert_cnn_input(cls, word_imgs):
+        """
+        Normlize original word images to be fed into CRNN model. This normalization must be same as in preparing training data
+
+        Parameters
+        ----------
+        word_images : a dictionary, {word_id: word_image, ...}
+
+        Returns
+        -------
+        word_images : a dictionary, {word_id: trans_word_image, ...}
+
+        """
+        try:
+            width, height, channel = input_shape
+            if height != 32 or width != 400 or channel != 1:
+                raise Exception('Error found in the image input shape. It must be (32, 400, 1) in prediction')
+
+        except Exception as exception:
+            trc = traceback.format_exc()
+            raise Exception('Error found in the image shape, {} \n {}'.format(str(exception), trc))
+
+        else:
+            imgs_to_crnn = {}
+            for k in word_imgs:
+                img = TrainingUtils.norm_img(word_imgs[k], (height, width), 2)  # transform original images to fit the CNN
+                img = img.astype(np.float32)
+                if np.max(img) > 0:
+                    img /= np.max(img)
+                else:
+                    img = np.ones((height, width))  # pad with 1s
+
+                img = np.expand_dims(img.T, -1)
+                imgs_to_crnn[k] = img
+
+        return imgs_to_crnn
+
+    @classmethod
+    def recognize(cls, word_imgs):
         """
         Run the pre-trained model to recognize each word image. It assumes word_images are clean and not empty
         Parameters
@@ -68,87 +123,20 @@ class Predict:
         recognized_words : a dictionary, {word_id: {'Text': word, 'condifence': conf}, ...}    
 
         """
-         
-        width, height, channel = input_shape
-        word_ids = [k for k, v in word_images.items()]
-        imgs = [v for k, v in word_images.items()]
-        x = np.zeros((len(imgs), width, height, 1), dtype=np.float32)          
-        for ii in range(len(imgs)):
-            # transform original images to fit the CNN
-            img = TrainingUtils.norm_img(imgs[ii], (height, width), 2) 
-            img = img.astype(np.float32)
-            if np.max(img) > 0:
-                img /= np.max(img)
-            else: 
-                img = np.ones((height, width))  # pad with 1s
 
-            img = np.expand_dims(img.T, -1)
-            x[ii] = img                
-            
-        y_pred = input_model.predict(x, len(x)) 
-        result = Predict.decode_batch(y_pred) 
+        imgs_to_crnn = RecognitionUtils.convert_cnn_input(word_imgs)
+        word_ids = list(imgs_to_crnn.keys())
+        x = np.array([imgs_to_crnn[k] for k in imgs_to_crnn])
+        y_pred = RecognitionUtils.MODEL.predict(x, len(x))
+        result = RecognitionUtils.decode_batch(y_pred)
         recog_words = {i: {'Text': word, 'Confidence': conf} for i, (word, conf) in zip(word_ids, result)}
     
         return recog_words 
     
-    @staticmethod
-    def image_for_extraction(raw_image):
-        """
-        Very critical step in the image processing, since it is also used in the preparation of training data 
-        """
-        gray = cv2.cvtColor(raw_image, cv2.COLOR_BGR2GRAY)        
-        ret, thresh = cv2.threshold(gray,0,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)   
-        return thresh
 
-    @staticmethod
-    def get_word_images_from_textract(response, img_file):
-        """      
-        Parameters
-        ----------
-        response : string, path to the JSON representation of the Textract OCR            
-        img_file : string, path to the image
+# load model
+try:
+    RecognitionUtils.load_model()
 
-        Returns
-        -------
-        a dictionary,  having {word_id: word_image, ...}
-
-        """
-                   
-        img = cv2.imread(img_file)       
-        img_thresh = Predict.image_for_extraction(img)
-        # remove lines not good for highlighted words
-        # img_thresh = ImageUtils.remove_lines(img_thresh, horizontalsize=120, verticalsize=100 )  #remove lines not good for highlighted words
-        img_h, img_w = img_thresh.shape[:2]
-                     
-        with open(response, 'r') as r:
-           textract_ocr = json.load(r)  
-           
-        document = TextractUtils(textract_ocr)
-        word_map, line_map = document.TextractParser()
-        Text = document.GetText()   
-        h_w_ratio = [v['height']/v['width'] for k, v in word_map.items()]    
-        if np.mean(h_w_ratio) > 1:     # rotated images
-           raise Exception('Rotated images are not supported')
-           
-        else:
-            word_imgs = {}
-            for k, v in line_map.items() :
-                bbox = [v['left'],  v['top'],  v['right'],  v['bottom']] 
-                l, t, r, b = ImageUtils.reverseXY(img_h, img_w, bbox)
-                line_img = img_thresh[t:b, l:r ] 
-                line_img = ImageUtils.crop_image(line_img, axis=2)
-                height_in_line = line_img.shape[0]                    
-                ids = v['ids']   
-                # ids = sorted(ids, key = lambda x: word_map[x]['left'])
-                for i in ids:         
-                    word_obj = word_map[i]    
-                    bbox0 = [word_obj['left'],  word_obj['top'],  word_obj['right'],  word_obj['bottom']] 
-                    l0, t0, r0, b0 = ImageUtils.reverseXY(img_h, img_w, bbox0)
-                    word_img = img_thresh[t0:b0, l0:r0]
-                    word_img = ImageUtils.crop_image(word_img, 2)  
-                    size = word_img.shape[:2]                            
-                    half_h = max(0, int((height_in_line - size[0])/2))
-                    word_img = np.pad(word_img, ((half_h, half_h), (0, 0)), 'constant', constant_values=0)
-                    word_imgs[i] = word_img 
-                                    
-            return Text, word_imgs
+except Exception as error:
+    logger.error("Could't load the pre-trained CNN model, {}".format(str(error)))

@@ -1,42 +1,36 @@
+import numpy as np
+
+from src.image_util import ImageUtils
+
+
 class TextractUtils:
-    """need to change"""
-    def __init__(self, textract_response):
-        """
-        textract_response: Textract   response    files    JSON    representation
-        """
 
-        self.response = textract_response
-        self.Text = ''
-        self.word_map = {}
-        self.line_map = {}
-
-    def TextractParser(self):
+    @staticmethod
+    def parse(textract_ocr):
         """
         Parses the Textract JSON Object and returns the word map and line map
         """
 
-        blocks = self.response['Blocks']
-        # get  word maps       
+        blocks = textract_ocr['Blocks']
+
+        word_dict = {}
+        line_dict = {}
         for block in blocks:
             block_id = block['Id']
             if block['BlockType'] == "WORD":
-                left = block['Geometry']['BoundingBox']['Left']
-                top = block['Geometry']['BoundingBox']['Top']
-                height = block['Geometry']['BoundingBox']['Height']
-                width = block['Geometry']['BoundingBox']['Width']
-                right = left + width
-                bottom = top + height
-                self.word_map[block_id] = {'ids': [block_id],
-                                           'Text': block['Text'].replace(' ', ''),
-                                           'text': block['Text'].replace(' ', '').lower(),
-                                           'left': left,
-                                           'right': right,
-                                           'top': top,
-                                           'bottom': bottom,
-                                           'width': width,
-                                           'height': height,
-                                           'confidence': block['Confidence']
-                                           }
+                bbox = block['Geometry']['BoundingBox']
+                x,y, w, h = bbox['Left'], bbox['Top'], bbox['Width'], bbox['Height']
+                word_dict[block_id] = {'ids': [block_id],
+                                       'Text': block['Text'],
+                                       'left': x,
+                                       'top': y,
+                                       'right': x + w,
+                                       'bottom': y + h,
+                                       'height': h,
+                                       'width': w,
+                                       'bbox': [x, y, x + w, y + h],
+                                       'confidence': block['Confidence']
+                                       }
 
             elif block['BlockType'] == "LINE":
                 if 'Relationships' in block.keys():
@@ -44,34 +38,66 @@ class TextractUtils:
                         if relationship['Type'] == 'CHILD':
                             ids = relationship['Ids']
 
-                    left = block['Geometry']['BoundingBox']['Left']
-                    top = block['Geometry']['BoundingBox']['Top']
-                    height = block['Geometry']['BoundingBox']['Height']
-                    width = block['Geometry']['BoundingBox']['Width']
-                    right = left + width
-                    bottom = top + height
-                    self.line_map[block_id] = {'ids': ids,
-                                               'Text': block['Text'].replace(' ', ''),
-                                               'text': block['Text'].replace(' ', '').lower(),
-                                               'left': left,
-                                               'right': right,
-                                               'top': top,
-                                               'bottom': bottom,
-                                               'width': width,
-                                               'height': height,
-                                               'confidence': block['Confidence']
-                                               }
-        return self.word_map, self.line_map
+                    bbox = block['Geometry']['BoundingBox']
+                    x, y, w, h = bbox['Left'], bbox['Top'], bbox['Width'], bbox['Height']
+                    line_dict[block_id] = {'ids': ids,
+                                           'Text': block['Text'],
+                                           'left': x,
+                                           'top': y,
+                                           'right': x + w,
+                                           'bottom': y + h,
+                                           'height': h,
+                                           'width': w,
+                                           'bbox': [x, y, x + w, y + h],
+                                           'confidence': block['Confidence']
+                                           }
 
-    def GetText(self):
+        return word_dict, line_dict
+
+    @staticmethod
+    def get_text(word_dict):
+        return ' '.join( v['Text'] for k, v in word_dict.items() )
+
+    @staticmethod
+    def get_word_images_from_textract(raw_img, word_dict, line_dict):
         """
-        return a full text of the document
+        Parameters
+        ----------
+        raw_img : numpy arrar of image
+        word_dict :
+        line_dict :
+
+        Returns
+        -------
+        a dictionary,  having {word_id: word_image, ...}
+
         """
 
-        for item in self.response["Blocks"]:
-            if item["BlockType"] == "WORD":
-                self.Text = self.Text + " " + item["Text"]
+        img_thresh = ImageUtils.image_for_extraction(raw_img)
+        # img_thresh = ImageUtils.remove_lines(img_thresh, horizontalsize=120, verticalsize=100 )  # remove lines not good for highlighted words
+        img_h, img_w = img_thresh.shape[:2]
 
-        self.Text = self.Text.strip()
+        h_w_ratio = [v['height'] / v['width'] for k, v in word_dict.items()]
+        if np.mean(h_w_ratio) > 1:  # rotated images
+            raise Exception('Rotated images are not supported')
 
-        return self.Text
+        word_imgs = {}
+        for k, v in line_dict.items():
+            bbox = v['bbox']
+            l, t, r, b = ImageUtils.reverseXY(img_h, img_w, bbox)
+            line_img = img_thresh[t:b, l:r]
+            line_img = ImageUtils.crop_image(line_img, axis=2)
+            height_in_line = line_img.shape[0]
+            ids = v['ids']
+            ids = sorted(ids, key = lambda x: word_dict[x]['left'])
+            for i in ids:
+                bbox0 = word_dict[i]['bbox']
+                l0, t0, r0, b0 = ImageUtils.reverseXY(img_h, img_w, bbox0)
+                word_img = img_thresh[t0:b0, l0:r0]
+                word_img = ImageUtils.crop_image(word_img, 2)
+                size = word_img.shape[:2]
+                half_h = max(0, int((height_in_line - size[0]) / 2))
+                word_img = np.pad(word_img, ((half_h, half_h), (0, 0)), 'constant', constant_values=0)
+                word_imgs[i] = word_img
+
+        return word_imgs
