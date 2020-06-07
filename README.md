@@ -29,7 +29,6 @@ The text recognition is relatively static. You won’t see big changes in text s
 
 Mind you, machine learning is not about the machine’s “intelligence”, it is all about automation.
 
-
 #### Reference
 1. https://arxiv.org/abs/1507.05717
 2. https://github.com/bgshih/crnn
@@ -39,25 +38,21 @@ Mind you, machine learning is not about the machine’s “intelligence”, it i
 6. https://www.how-ocr-works.com/intro/intro.html
 
 
-
 ### Neural Network Structure
-
-
 
 ### Download the pre-trained CNN+LSTM model
 A pre-trained [model](https://drive.google.com/drive/folders/1-a2KFqmm4eroyf1dYDvQ3vlnLdufMyW1?usp=sharing) (two files) was saved in google drive. Please put them to './best_model'. 
 
 ### Training a new model
-A sample of synthetic word images (50K) was included for playing only. They are not good enough to achieve a high recognition rate in real application. The pre-trained model was trained on millions of synthetic and real word images. If you like to have more samples for your research, please contact me (dlaohu.github@gmail.com).  
+A sample of synthetic word images (50K) was included for playing only. They are not good enough to achieve a high recognition rate in real application. The pre-trained model was trained on millions of synthetic and real word images. If you like to have more samples for your research, please contact me (dlaohu.github@gmail.com).
 
 ### Compare to Textract
-Given an text image and its Textract ocr, you can quickly check the model performance. However, there are still some improvements which need to be done, such as image pre-processing and spell check. Removing lines, increasing the contrast, de-noising, and spell check are under investigation now. 
+Given an text image and its Textract ocr, you can quickly check the model performance. However, there are still some improvements which need to be done, such as image pre-processing and spell check. Removing lines, increasing the contrast, de-noising, etc.
     
     $ python compare_textract.py
     
 ### Docuemnt Layout Analysis (working)
 
-
-### One thought about Spell Check
-Spell Sheck is usually used for the OCR post-processing. However, it seems to be easily over used. It works well for text-only recognition tasks. In other tasks, the spell check should be adapted for the specific use case.  For example, we can consider the spell check on key words for ML/AI applications. Therefore, effors should be focused on improving the CRNN accuracy.  
+### Some thought about Spell Check
+Spell Sheck is usually used for the OCR post-processing. However, it seems to be easily over used. It works well for text-only recognition tasks. In other tasks, the spell check should be adapted for the specific use case.  For example, we can consider the spell check on key words for ML/AI applications. Therefore, effors should be focused on improving the CRNN accuracy.
 
