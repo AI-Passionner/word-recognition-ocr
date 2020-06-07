@@ -45,15 +45,19 @@ Mind you, machine learning is not about the machine’s “intelligence”, it i
 
 
 ### Download the pre-trained CNN+LSTM model
-A pre-trained [model]() (two files) was saved in google drive. If testing locally, please make sure the model file path './best_model'. 
+A pre-trained [model](https://drive.google.com/drive/folders/1-a2KFqmm4eroyf1dYDvQ3vlnLdufMyW1?usp=sharing) (two files) was saved in google drive. Please put them to './best_model'. 
 
 ### Training a new model
 A sample of synthetic word images (50K) was included for playing only. They are not good enough to achieve a high recognition rate in real application. The pre-trained model was trained on millions of synthetic and real word images. If you like to have more samples for your research, please contact me (dlaohu.github@gmail.com).  
 
 ### Compare to Textract
-Given an text image and its Textract ocr, you can quickly check the model performance. The current model is comparable to the Textract in invoice documents. However, there are still some improvements, such as image pre-processing and spell check. Removing lines, increasing the contrast, de-noising, and spell check are under investigation now. 
+Given an text image and its Textract ocr, you can quickly check the model performance. However, there are still some improvements which need to be done, such as image pre-processing and spell check. Removing lines, increasing the contrast, de-noising, and spell check are under investigation now. 
     
     $ python compare_textract.py
     
 ### Docuemnt Layout Analysis (working)
+
+
+### One thought about Spell Check
+Spell Sheck is usually used for the OCR post-processing. However, it seems to be easily over used. It works well for text-only recognition tasks. In other tasks, the spell check should be adapted for the specific use case.  For example, we can consider the spell check on key words for ML/AI applications. Therefore, effors should be focused on improving the CRNN accuracy.  
 

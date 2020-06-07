@@ -7,19 +7,15 @@ class TextractUtils:
 
     @staticmethod
     def parse(textract_ocr):
-        """
-        Parses the Textract JSON Object and returns the word map and line map
-        """
-
+        """Parses the Textract JSON Object and returns the word map and line map"""
         blocks = textract_ocr['Blocks']
-
         word_dict = {}
         line_dict = {}
         for block in blocks:
             block_id = block['Id']
             if block['BlockType'] == "WORD":
                 bbox = block['Geometry']['BoundingBox']
-                x,y, w, h = bbox['Left'], bbox['Top'], bbox['Width'], bbox['Height']
+                x, y, w, h = bbox['Left'], bbox['Top'], bbox['Width'], bbox['Height']
                 word_dict[block_id] = {'ids': [block_id],
                                        'Text': block['Text'],
                                        'left': x,
@@ -56,17 +52,16 @@ class TextractUtils:
 
     @staticmethod
     def get_text(word_dict):
-        return ' '.join( v['Text'] for k, v in word_dict.items() )
+        return ' '.join(v['Text'] for k, v in word_dict.items())
 
     @staticmethod
-    def get_word_images_from_textract(raw_img, word_dict, line_dict):
+    def get_word_images(raw_img, word_dict, line_dict):
         """
         Parameters
         ----------
-        raw_img : numpy arrar of image
-        word_dict :
-        line_dict :
-
+        raw_img : numpy array of image
+        word_dict : python dictionary, storing word-level OCR
+        line_dict : python dictionary, storing line-level OCR
         Returns
         -------
         a dictionary,  having {word_id: word_image, ...}
@@ -89,7 +84,7 @@ class TextractUtils:
             line_img = ImageUtils.crop_image(line_img, axis=2)
             height_in_line = line_img.shape[0]
             ids = v['ids']
-            ids = sorted(ids, key = lambda x: word_dict[x]['left'])
+            ids = sorted(ids, key=lambda x: word_dict[x]['left'])
             for i in ids:
                 bbox0 = word_dict[i]['bbox']
                 l0, t0, r0, b0 = ImageUtils.reverseXY(img_h, img_w, bbox0)
@@ -101,3 +96,5 @@ class TextractUtils:
                 word_imgs[i] = word_img
 
         return word_imgs
+
+

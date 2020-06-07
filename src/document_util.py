@@ -2,10 +2,10 @@ import subprocess
 import cv2
 from PIL import Image
 
+
 class DocumentUtils:
     """
-    Ghostscript version 9.22 with PDF 
-    link: https://www.ghostscript.com/
+    Ghostscript version 9.22 with PDF (https://www.ghostscript.com)
     usage:  
         gswin64 -q -dNOPAUSE -r300 -sDEVICE=tiffg4 -sOutputFile=b%d.tif filename.pdf -c quit
         gswin64c.exe -dNOPAUSE -r300 -sDEVICE=tiffscaled24 -sCompression=lzw -dBATCH -sOutputFile=filename.pdf

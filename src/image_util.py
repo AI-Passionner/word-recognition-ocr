@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from PIL import Image
 
 
-class  ImageUtils:
+class ImageUtils:
     
     @staticmethod
     def show_image(img, size=(6, 12), caption='Untitled', subplot=None):
@@ -17,7 +17,7 @@ class  ImageUtils:
     @staticmethod
     def image_for_extraction(raw_image):
         gray = cv2.cvtColor(raw_image, cv2.COLOR_BGR2GRAY)
-        ret,thresh = cv2.threshold(gray,0,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
+        ret, thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
         return thresh
 
     @staticmethod
@@ -52,19 +52,19 @@ class  ImageUtils:
     def crop_image(bw_image, axis):
         """remove empty pixels as value = 0"""
         # horizonal 
-        H,W = bw_image.shape[:2]
+        H, W = bw_image.shape[:2]
         h_th = 1  
-        hori_hist  =  np.mean (bw_image, axis  = 1)         
-        hori_hist = [0 if i < h_th else 1 for i in hori_hist ]         
+        hori_hist = np.mean(bw_image, axis=1)
+        hori_hist = [0 if i < h_th else 1 for i in hori_hist]
         if 1 in hori_hist:
             t_b = hori_hist.index(1)
-            b_b =  H - hori_hist[::-1].index(1)
+            b_b = H - hori_hist[::-1].index(1)
         else:
             t_b = 0
             b_b = H
               
         # vertical 
-        v_th = 1   # scale* 255.0 / W
+        v_th = 1
         vert_hist = np.mean(bw_image, axis=0)
         vert_hist = [0 if i < v_th else 1 for i in vert_hist ]         
         if 1 in vert_hist:
@@ -144,21 +144,7 @@ class  ImageUtils:
         return buf
     
     @staticmethod
-    def tenengrad_var(image):
-        """
-        This function returns the Tenengrad variation measure of image sharpness in a pixel-wise measurement.
-        This could be replaced by any other sharpness measure or edge detection.
-
-        """
-        image = cv2.resize(image, (0, 0), fx=0.4, fy=0.4)
-        gauss_x = cv2.Sobel(image, cv2.CV_64F, 1, 0)
-        gauss_y = cv2.Sobel(image, cv2.CV_64F, 0, 1)
-        focus_measure = gauss_x ** 2 + gauss_y ** 2
-        return focus_measure
-    
-    @staticmethod
-    def remove_noise_and_smooth(gray_img, thresh_img, kernel = (2,2)):   
-        # filtered = cv2.adaptiveThreshold(gray_img.astype(np.uint8), 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 9, 41)
+    def remove_noise_and_smooth(gray_img, thresh_img, kernel=(2, 2)):
         filtered = np.max(thresh_img) - thresh_img
         kernel = np.ones(kernel, np.uint8)
         opening = cv2.morphologyEx(filtered, cv2.MORPH_OPEN, kernel)

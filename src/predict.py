@@ -37,7 +37,7 @@ class RecognitionUtils:
         Run the pre-trained model to recognize each word image. It assumes word_images are clean and not empty
         Parameters
         ----------
-        out :
+        crnn_out:
 
         Returns
         -------
@@ -61,7 +61,7 @@ class RecognitionUtils:
     
             outstr = ''
             char_probs = [] 
-            for i, p in  output:
+            for i, p in output:
                 if i < len(characters):
                     outstr += characters[i]
                     char_probs.append(p + np.finfo(float).eps)
@@ -77,7 +77,7 @@ class RecognitionUtils:
 
         Parameters
         ----------
-        word_images : a dictionary, {word_id: word_image, ...}
+        word_imgs : a dictionary, {word_id: word_image, ...}
 
         Returns
         -------
