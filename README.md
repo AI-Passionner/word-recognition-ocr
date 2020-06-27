@@ -49,10 +49,10 @@ A sample of synthetic word images (50K) was included for playing only. They are 
 ### Compare to Textract
 Given an text image and its Textract ocr, you can quickly check the model performance. However, there are still some improvements which need to be done, such as image pre-processing and spell check. Removing lines, increasing the contrast, de-noising, etc.
     
-    $ python compare_textract.py
+    $ python ./test/compare_textract.py --image ./test/test_1/test_1.png --response ./test/test_1/apiResponse.json --output ./test/test_1^C
     
-### Docuemnt Layout Analysis (working)
+### Document Layout Analysis (working)
 
 ### Some thought about Spell Check
-Spell Sheck is usually used for the OCR post-processing. However, it seems to be easily over used. It works well for text-only recognition tasks. In other tasks, the spell check should be adapted for the specific use case.  For example, we can consider the spell check on key words for ML/AI applications. Therefore, effors should be focused on improving the CRNN accuracy.
+Spell check is usually used for the OCR post-processing. However, it seems to be easily over used. It works well for text-only recognition tasks. In other tasks, the spell check should be adapted for the specific use case.  For example, we can consider the spell check on key words for ML/AI applications. Therefore, effors should be focused on improving the CRNN accuracy.
 

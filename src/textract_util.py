@@ -69,7 +69,8 @@ class TextractUtils:
         """
 
         img_thresh = ImageUtils.image_for_extraction(raw_img)
-        # img_thresh = ImageUtils.remove_lines(img_thresh, horizontalsize=120, verticalsize=100 )  # remove lines not good for highlighted words
+        # remove lines not good for highlighted words
+        # img_thresh = ImageUtils.remove_lines(img_thresh, hori_size=120, vert_size=100 )
         img_h, img_w = img_thresh.shape[:2]
 
         h_w_ratio = [v['height'] / v['width'] for k, v in word_dict.items()]
@@ -79,7 +80,7 @@ class TextractUtils:
         word_imgs = {}
         for k, v in line_dict.items():
             bbox = v['bbox']
-            l, t, r, b = ImageUtils.reverseXY(img_h, img_w, bbox)
+            l, t, r, b = ImageUtils.reverse_bbox(img_h, img_w, bbox)
             line_img = img_thresh[t:b, l:r]
             line_img = ImageUtils.crop_image(line_img, axis=2)
             height_in_line = line_img.shape[0]
@@ -87,7 +88,7 @@ class TextractUtils:
             ids = sorted(ids, key=lambda x: word_dict[x]['left'])
             for i in ids:
                 bbox0 = word_dict[i]['bbox']
-                l0, t0, r0, b0 = ImageUtils.reverseXY(img_h, img_w, bbox0)
+                l0, t0, r0, b0 = ImageUtils.reverse_bbox(img_h, img_w, bbox0)
                 word_img = img_thresh[t0:b0, l0:r0]
                 word_img = ImageUtils.crop_image(word_img, 2)
                 size = word_img.shape[:2]

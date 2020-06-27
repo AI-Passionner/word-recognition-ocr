@@ -13,6 +13,6 @@ class EvaluateCallback(Callback):
         self.val_y = val_y           
     
     def on_epoch_end(self, epoch, logs=None):
-        acc = TrainingUtils.evaluate(self.pred_model,self.val_x, self.val_y, self.input_shape, self.val_batch_size)
+        acc = TrainingUtils.evaluate(self.pred_model, self.val_x, self.val_y, self.input_shape, self.val_batch_size)
         print('')
         print('acc:'+str(acc)+"%")

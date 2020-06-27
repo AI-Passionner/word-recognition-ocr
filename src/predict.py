@@ -47,7 +47,7 @@ class RecognitionUtils:
         ret = []
         for j in range(crnn_out.shape[0]):
             probs_array = crnn_out[j, 2:]
-            pred_cls = list(np.argmax(probs_array , 1))
+            pred_cls = list(np.argmax(probs_array, 1))
             pred_probs = [probs_array[i][pred_cls[i]] for i in range(len(pred_cls))]
 
             output = []

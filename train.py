@@ -1,4 +1,3 @@
-import numpy as np
 from sklearn.utils import shuffle
 from unidecode import unidecode  
 from sklearn.model_selection import train_test_split
@@ -6,7 +5,8 @@ from sklearn.model_selection import train_test_split
 from tensorflow.keras.callbacks import ModelCheckpoint
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import SGD
-from tensorflow.keras.layers import Input, Conv2D, MaxPooling2D, BatchNormalization, Dropout, Dense, Reshape, LSTM, Lambda, add, concatenate
+from tensorflow.keras.layers import Input, Conv2D, MaxPooling2D, BatchNormalization, Dropout, Dense, \
+                                    Reshape, LSTM, Lambda, add, concatenate
 
 from src.config import *
 from src.train_util import TrainingUtils
@@ -30,18 +30,17 @@ def train():
     pool_size_1 = (2, 2)
     pool_size_2 = (1, 2)
     pool_size_3 = (1, 3)
-    time_dense_size = 32
     lstm_size = 512
     time_dense_size = 512
     dropout_rate = 0.25
    
-    # since the original dimenstionis (width, height), the pool_size must be (horizonal, vertical)
+    # since the original dimension is (width, height), the pool_size must be (horizonal, vertical)
     inputShape = Input((width, height, channel))  # base on Tensorflow backend
     
     conv_1 = Conv2D(cnn_filters[0],  kernel, activation='relu', padding='same')(inputShape)  # was (3,3)
     conv_1 = Conv2D(cnn_filters[0],  kernel, activation='relu', padding='same')(conv_1)      # was (3,3)
-    batchnorm_1 = BatchNormalization()(conv_1)         
-    pool_1 = MaxPooling2D(pool_size=pool_size_1)(batchnorm_1)    #since input shape is (width, height, channel), pool_size must be (horizonal, vertical)
+    batchnorm_1 = BatchNormalization()(conv_1)
+    pool_1 = MaxPooling2D(pool_size=pool_size_1)(batchnorm_1)
            
     conv_2 = Conv2D(cnn_filters[1], kernel, activation='relu', padding='same')(pool_1)     # was (3,3)
     conv_2 = Conv2D(cnn_filters[1], kernel, activation='relu', padding='same')(conv_2)     # was (3,3)
@@ -97,13 +96,13 @@ def train():
     model.summary()  
             
     checkpoint = ModelCheckpoint(cp_save_path, monitor='loss', verbose=1, save_best_only=True, mode='min')
-    evaluator = EvaluateCallback(base_model, val_x, val_y, input_shape, val_batch_size) # Evaluate()   
+    evaluator = EvaluateCallback(base_model, val_x, val_y, input_shape, val_batch_size)   # Evaluate()
     
     if pre_trained_model:        
         model.load_weights(pre_trained_model)     
        
-    model.fit(TrainingUtils.img_gen_train(train_x, train_y, train_batch_size, bn_shape), steps_per_epoch=1000, epochs=1, verbose=1, workers=1,
-                        callbacks=[evaluator, checkpoint])     
+    model.fit(TrainingUtils.img_gen_train(train_x, train_y, train_batch_size, bn_shape), steps_per_epoch=1000,
+              epochs=1, verbose=1, workers=1, callbacks=[evaluator, checkpoint])
     
     base_model.save(model_save_path + '/' + 'tf2_word_recognition.hdf5')
     model_json = base_model.to_json()
