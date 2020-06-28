@@ -7,11 +7,11 @@ from PIL import Image
 class ImageUtils:
 
     @staticmethod
-    def show_image(img, size=(6, 12), caption='Untitled', subplot=None):
+    def show_image(img, caption='Untitled', subplot=None):
         if subplot is None:
             _, (subplot) = plt.subplots(1, 1)
         subplot.axis('off')
-        subplot.imshow(img, size, cmap='gray')
+        subplot.imshow(img)
         plt.title(caption)
 
     @staticmethod
