@@ -51,7 +51,13 @@ Given an text image and its Textract ocr, you can quickly check the model perfor
     
     $ python ./test/compare_textract.py --image ./test/test_1/test_1.png --response ./test/test_1/apiResponse.json --output ./test/test_1^C
     
-### Document Layout Analysis (working)
+### Document Layout Analysis
+A simple version of document layout analysis was updated. The current version was used for detecting the word images 
+in a document. However, an investigation and research are needed. This will be in a new repository, 
+in which a better document layout extraction will be developed, extracting more useful information than texts and coordinates. 
+If you are interested, please join.
+ 
+    $ python serve.py --image ./test/test_1/test_1.png --output ./test/test_1
 
 ### Some thought about Spell Check
 Spell check is usually used for the OCR post-processing. However, it seems to be easily over used. It works well for text-only recognition tasks. In other tasks, the spell check should be adapted for the specific use case.  For example, we can consider the spell check on key words for ML/AI applications. Therefore, effors should be focused on improving the CRNN accuracy.
